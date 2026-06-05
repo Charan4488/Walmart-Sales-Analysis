@@ -2,89 +2,162 @@
 
 ##  Project Overview
 
-This project focuses on analyzing Walmart sales data using SQL to extract meaningful business insights. It includes data cleaning, transformation, and analysis to understand sales performance, seasonal trends, and the impact of external factors.
+This project aims to examine Walmart’s sales data using SQL to derive meaningful business insights. The dataset contains weekly sales information for multiple stores along with external variables such as temperature, fuel price, CPI, and unemployment rate.
+
+The goal is to convert raw data into valuable insights that support better understanding of sales behavior and overall business performance.
+
+---
 
 ##  Objectives
 
-* Analyze overall sales performance
-* Identify top-performing and low-performing stores
-* Compare holiday vs non-holiday sales trends
-* Study monthly and yearly sales patterns
-* Evaluate the impact of external factors like temperature, fuel price, and unemployment
+* Clean and prepare the dataset for analysis
+* Standardize date formats into SQL DATE format
+* Explore sales trends across different stores and time periods
+* Identify high-performing and underperforming stores
+* Analyze how external factors influence sales performance
 
-## Tech Stack
+---
 
-* **Database:** MySQL / MariaDB
-* **Tool:** phpMyAdmin
-* **Language:** SQL
+##  Dataset Information
 
+The dataset consists of the following attributes:
 
-##  Dataset Description
+* Store
+* Date
+* Weekly_Sales
+* Holiday_Flag
+* Temperature
+* Fuel_Price
+* CPI
+* Unemployment
 
-The dataset contains the following columns:
+---
 
-* Store – Store number
-* Date – Weekly sales date
-* Weekly_Sales – Sales for the week
-* Holiday_Flag – Indicates holiday week (1 = Holiday, 0 = Non-Holiday)
-* Temperature – Temperature during the week
-* Fuel_Price – Fuel price in the region
-* CPI – Consumer Price Index
-* Unemployment – Unemployment rate
+##  Data Cleaning
 
+* The `Date` column was initially stored as text in `DD-MM-YYYY` format
+* Converted it into a proper DATE format using SQL:
 
+```sql
+UPDATE walmart
+SET Date = STR_TO_DATE(Date, '%d-%m-%Y');
 
-##  Data Cleaning Steps
+ALTER TABLE walmart
+MODIFY Date DATE;
+```
 
-* Imported CSV file using phpMyAdmin
-* Converted `Date` column from VARCHAR to DATE using `STR_TO_DATE()`
-* Removed header row mistakenly inserted as data
-* Checked for NULL values and duplicates
-* Ensured clean and structured dataset
+* Eliminated the extra header row inserted during data import
+* Verified and handled missing values and duplicate records
 
+---
 
+##  SQL Analysis
 
-##  Analysis Performed
+### 1. Total Sales
 
-###  Sales Analysis
+```sql
+SELECT SUM(Weekly_Sales) AS Total_Sales FROM walmart;
+```
 
-* Total sales calculation
-* Store-wise performance analysis
-* Identification of high and low-performing stores
+---
 
-###  Time-Based Analysis
+### 2. Sales by Store
 
-* Monthly sales trends
-* Yearly sales trends
-* Seasonal patterns
+```sql
+SELECT Store, SUM(Weekly_Sales) AS Sales
+FROM walmart
+GROUP BY Store
+ORDER BY Sales DESC;
+```
 
-###  Holiday Analysis
+---
 
-* Comparison of holiday vs non-holiday sales
-* Store performance during holidays
+### 3. Holiday vs Non-Holiday Sales
 
-###  External Factors Analysis
+```sql
+SELECT Holiday_Flag, SUM(Weekly_Sales) AS Sales
+FROM walmart
+GROUP BY Holiday_Flag;
+```
 
-* Impact of temperature on sales
-* Fuel price vs sales relationship
-* Unemployment rate vs sales
+---
 
-###  Advanced Analysis
+### 4. Monthly Sales Trend
 
-* Ranking stores using window functions
-* Moving average for trend analysis
+```sql
+SELECT MONTH(Date) AS Month, SUM(Weekly_Sales) AS Sales
+FROM walmart
+GROUP BY Month;
+```
 
+---
 
+### 5. Top 5 Stores
+
+```sql
+SELECT Store, SUM(Weekly_Sales) AS Sales
+FROM walmart
+GROUP BY Store
+ORDER BY Sales DESC
+LIMIT 5;
+```
+
+---
+
+### 6. Low Performing Stores
+
+```sql
+SELECT Store, SUM(Weekly_Sales) AS Sales
+FROM walmart
+GROUP BY Store
+ORDER BY Sales ASC
+LIMIT 5;
+```
+
+---
+
+### 7. External Factors Impact
+
+```sql
+SELECT ROUND(Temperature), AVG(Weekly_Sales)
+FROM walmart
+GROUP BY ROUND(Temperature);
+
+SELECT ROUND(Unemployment), AVG(Weekly_Sales)
+FROM walmart
+GROUP BY ROUND(Unemployment);
+```
+
+---
 
 ##  Key Insights
 
-*  Top-performing stores contribute significantly to total revenue
-*  Some stores show inconsistent sales patterns
-*  Holiday sales are generally higher than non-holiday periods
-*  Moderate temperatures are associated with better sales
-*  Rising fuel prices slightly affect customer purchasing behavior
-*  Higher unemployment rates can reduce sales
+*  A small number of stores generate a large portion of total revenue
+*  Sales behavior varies significantly between holiday and regular periods
+*  Seasonal trends are visible when analyzing monthly performance
+*  Environmental and economic factors have a measurable impact on sales
+*  Certain stores consistently show lower performance and need strategic improvement
 
+---
+
+##  Tools & Technologies
+
+* SQL (MySQL / MariaDB)
+* phpMyAdmin
+* Excel
+
+---
+
+##  Conclusion
+
+This project highlights how SQL can be effectively used to process and analyze real-world datasets. It demonstrates the ability to clean data, perform structured analysis, and extract insights that can support business decision-making.
+
+---
 
 ##  Author
-K.Charan
+
+**Charan Katragadda**
+
+
+---
+
